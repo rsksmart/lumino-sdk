@@ -44,7 +44,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "is-url": "^1.2.4",
     "isomorphic-form-data": "^1.0.0",
-    "node-fetch": "^1.6.0",
+    "node-fetch": "^2.6.1",
     "proper-url-join": "^1.2.0",
     "query-string": "^6.1.0",
     "web3": "^1.0.0-beta.46",
