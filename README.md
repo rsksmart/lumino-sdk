@@ -20,7 +20,7 @@ Node installation will include [NPM](https://www.npmjs.com/), which is responsib
 3. Run `npm install`.
 4. Run `gulp build`.
 5. Use the `bundle.js` file generated in `dist` folder to use the SDK in the browser.
-6. Include it in your page like this: `<script src="path/to/index.js"></script>` .
+6. Include it in your page like this: `<script src="path/to/utils.js"></script>` .
 7. Define the constructor like this: `const Lumino = Lumino.default;`
 
 ## Usage

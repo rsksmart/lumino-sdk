@@ -4,13 +4,12 @@
   "description": "SDK to consume lumino api methods.",
   "main": "./dist/index.js",
   "scripts": {
+    "start": "npx gulp develop",
     "test": "jest --passWithNoTests tests/",
-    "start": "npx gulp watch",
     "build": "npx gulp babel",
     "prettier": "prettier --print-width 80 --end-of-line lf --trailing-comma es5 --write 'src/**/*.js'",
     "lint": "eslint 'src/**' -c './.eslintrc.js' --ignore-path './.eslintignore' --fix",
-    "prepublishOnly": "npm run build",
-    "doc": "gulp doc"
+    "doc": "npx gulp doc"
   },
   "repository": {
     "type": "git",
@@ -50,11 +49,9 @@
     "husky": "^4.3.0",
     "jest": "^25.5.4",
     "json-loader": "^0.5.7",
-    "path": "^0.12.7",
     "prettier": "^1.18.2",
     "regenerator-runtime": "^0.13.3",
-    "sinon": "^7.5.0",
-    "webpack": "^4.42.1"
+    "sinon": "^7.5.0"
   },
   "author": "RSK",
   "license": "ISC",

@@ -1,33 +1,33 @@
 import axios from 'axios';
 import isUrl from 'is-url';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-function createClient({ luminoNodeBaseUrl, debug }) {
+function createClient(luminoNodeBaseUrl) {
   const restClient = axios.create({ baseURL: luminoNodeBaseUrl });
   if (!isUrl(luminoNodeBaseUrl)) {
     throw new Error(`${luminoNodeBaseUrl} is not an url`);
   }
-  if (debug) {
-    setupDebugInterceptors(restClient);
-  }
+  setupDebugInterceptors(restClient);
   setupTokenInterceptor(restClient);
   return restClient;
 }
 
 function setupDebugInterceptors(restClient) {
   restClient.interceptors.request.use(request => {
-    console.log('Starting Request');
-    console.log('URL:', request.url);
-    console.log('METHOD: ', request.method);
-    console.log('DATA: ', request.data);
-    console.log('HEADERS: ', request.headers);
+    console.debug('Starting Request');
+    console.debug('URL:', request.url);
+    console.debug('METHOD: ', request.method);
+    console.debug('DATA: ', request.data);
+    console.debug('HEADERS: ', request.headers);
     return request;
   });
 
   restClient.interceptors.response.use(response => {
-    console.log('Response:');
-    console.log('STATUS:', response.status);
-    console.log('STATUS_TEXT:', response.statusText);
-    console.log('DATA:', response.data);
+    console.debug('Response:');
+    console.debug('STATUS:', response.status);
+    console.debug('STATUS_TEXT:', response.statusText);
+    console.debug('DATA:', response.data);
     return response;
   });
 }
@@ -43,4 +43,11 @@ function setupTokenInterceptor(restClient) {
   });
 }
 
-export default createClient;
+function handleResponse(promise) {
+  return of(promise).pipe(
+    map(response => response.data),
+    catchError(response => of(response.errors))
+  );
+}
+
+export { createClient, handleResponse };
