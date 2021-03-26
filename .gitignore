@@ -61,4 +61,5 @@ typings/
 .next
 dist
 doc
-.idea
+.idea/
+coverage/
