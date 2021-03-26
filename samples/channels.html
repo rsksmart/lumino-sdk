@@ -10,17 +10,14 @@
 
 <pre id="json"></pre>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/0.9.0/purify.min.js"></script>
-<script type="text/babel">
-    const Lumino = Lumino.default;
+<script>
+    var Lumino = Lumino.default;
 
     let configs = {};
     configs['luminoNodeBaseUrl'] = 'http://localhost:5001/api/v1/';
 
     let params = {};
-    params['token_addresses'] = "0x714E99c00D4Abf4a8a2Af90Fd40B595C68801C42";
+    params['token_addresses'] = "0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d";
 
     const lumino = new Lumino(configs);
 

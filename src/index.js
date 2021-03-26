@@ -1,4 +1,4 @@
-import RestClient from './api';
+import createClient from './api';
 import web3 from 'web3';
 
 /**
@@ -15,6 +15,7 @@ export default class Lumino {
    * @param {String} options.nodeLuminoAddress - Principal node address.
    */
   constructor(options) {
+    // TODO: do we really need the other params?
     this.options = options;
     this.debug = false;
     if (options.debug) {
@@ -23,7 +24,10 @@ export default class Lumino {
     this.luminoNodeBaseUrl = options.luminoNodeBaseUrl;
     this.rskRpcNodeBaseUrl = options.rskRpcNodeBaseUrl;
     this.nodeLuminoAddress = options.nodeLuminoAddress;
-    this.api = new RestClient(this.luminoNodeBaseUrl, this.debug);
+    this.api = createClient({
+      luminoNodeBaseUrl: this.luminoNodeBaseUrl,
+      debug: this.debug,
+    });
   }
 
   /**
@@ -52,7 +56,7 @@ export default class Lumino {
    * payments or an Error with the problem.
    */
   getPayments(params = {}) {
-    return this.api.send('GET', 'paymentsLumino', null, params);
+    return this.api.get('paymentsLumino', { params });
   }
 
   /**
@@ -64,8 +68,9 @@ export default class Lumino {
    * @return {Promise} Channels - Returns a Promise that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
-  getChannels(params = {}) {
-    return this.api.send('GET', 'channelsLumino', null, params);
+  async getChannels(params = {}) {
+    const { data } = await this.api.get('channelsLumino', { params });
+    return data;
   }
 
   /**
@@ -77,7 +82,7 @@ export default class Lumino {
    * address matches, channel identifier matches and rns address matches.
    */
   search(params = {}) {
-    return this.api.send('GET', 'searchLumino', null, params);
+    return this.api.get('searchLumino', { params });
   }
 
   /**
@@ -94,88 +99,91 @@ export default class Lumino {
    *
    * @returns {Promise} new channel info, or and error information
    */
-  async openChannel(data = {}) {
-    let urlPath = 'channels';
-    let body = Object.create({});
-    body.total_deposit = web3.utils.toWei(data.amount);
+  openChannel(data = {}) {
+    const body = {
+      token_address: data.tokenAddress,
+      settle_timeout: 500,
+      total_deposit: web3.utils.toWei(data.amount).toNumber(),
+    };
     if (data.rskPartnerAddress) {
       body.partner_address = data.rskPartnerAddress;
-    } else if (data.rnsPartnerAddress) {
-      urlPath = 'channelsLumino';
-      body.partner_rns_address = data.rnsPartnerAddress;
+      return this.api.put('channels', body);
     }
-    body.token_address = data.tokenAddress;
-    body.settle_timeout = 500;
-    return await this.api.send('PUT', urlPath, body, null);
+    if (data.rnsPartnerAddress) {
+      body.partner_rns_address = data.rnsPartnerAddress;
+      return this.api.put('channelsLumino', body);
+    }
   }
 
   /**
    * Close an exist channel between two nodes.
    *
-   * @param data {Map} - This is mandatory
-   * @param data.state {String} - The value of this params must be closed
    * @param params {Map} - This is mandatory
    * @param params.partnerAddress {String} - For example: 0x3E5B85E29504522DCD923aa503b4C502A64AdB7C
    * @param params.tokenAddress {String} - For example: 0x714E99c00D4Abf4a8a2Af90Fd40B595C68801C42
    * @returns {Promise} close channel response, or error response.
    */
-  closeChannel(data = {}, params = {}) {
-    let url = 'channels/' + params.tokenAddress + '/' + params.partnerAddress;
-    return this.api.send('PATCH', url, data, params);
+  closeChannel({ tokenAddress, partnerAddress }) {
+    return this.api.patch(
+      `channels/${tokenAddress}/${partnerAddress}`,
+      { state: 'closed' },
+      {
+        params: { tokenAddress, partnerAddress },
+      }
+    );
   }
 
   /**
    * Make offchain payment in a channel created between two nodes.
    *
-   * @param data {Map} - Mandatory
-   * @param data.amount {number} - Mandatory
    * @param params {Map} - Mandatory
+   * @param params.amount {number} - Mandatory
    * @param params.tokenAddress {String} - Mandatory
    * @param params.partnerAddress {String} - Mandatory
    *
    * @returns {Promise}
    */
-  async makePayment(data = {}, params = {}) {
-    let body = {};
-    const url = 'payments/' + params.tokenAddress + '/' + params.partnerAddress;
-    body.amount = web3.utils.toWei(data.amount);
-    return await this.api.send('POST', url, body, params);
+  async makePayment({ amount, tokenAddress, partnerAddress }) {
+    let body = { amount: web3.utils.toWei(amount) };
+    return await this.api.send(
+      'POST',
+      `payments/${tokenAddress}/${partnerAddress}`,
+      body
+    );
   }
 
   /**
    * Deposit tokens into a channel between two nodes
    *
-   * @param data - Mandatory
-   * @param data.amount {Number}
-   * @param params - Mandatory
-   * @param params.tokenAddress {String}
-   * @param params.partnerAddress {String}
+   * @param params {Map} - Mandatory
+   * @param params.amount {number} - Mandatory
+   * @param params.tokenAddress {String} - Mandatory
+   * @param params.partnerAddress {String} - Mandatory
    *
    *
    * @returns {Promise} deposit result or error
    */
-  async depositTokens(data = {}, params = {}) {
-    let body = {};
-    const channels = [
-      ...(await this.getChannels({ token_addresses: params.tokenAddress })),
-    ];
-    const url = 'channels/' + params.tokenAddress + '/' + params.partnerAddress;
-    let channelBalance = 0;
+  async depositTokens({ amount, tokenAddress, partnerAddress }) {
+    const channels = await this.getChannels({ token_addresses: tokenAddress });
     channels.forEach(tokenChannelMap => {
-      if (tokenChannelMap.token_address === params.tokenAddress) {
+      if (tokenChannelMap.token_address === tokenAddress) {
         tokenChannelMap.channels.forEach(channel => {
           if (
             channel.state === 'opened' &&
-            channel.partner_address === params.partnerAddress
+            channel.partner_address === partnerAddress
           ) {
-            channelBalance = channel.total_deposit;
+            const total_deposit =
+              Number(web3.utils.toWei(amount)) + Number(channel.total_deposit);
+            return this.api.patch(
+              `channels/${tokenAddress}/${partnerAddress}`,
+              { total_deposit },
+              { params: { tokenAddress, partnerAddress } }
+            );
           }
         });
       }
     });
-    body.total_deposit =
-      Number(web3.utils.toWei(data.amount)) + Number(channelBalance);
-    return await this.api.send('PATCH', url, body, params);
+    throw new Error('Channel not found');
   }
 
   /**
