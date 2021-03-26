@@ -1,8 +1,5 @@
-import 'babel-polyfill';
-
-import APICall from './restClient/APICall';
-import Util from './utils/Util';
-import BlockChainService from './services/BlockChainService';
+import Index from './api';
+import web3 from 'web3';
 
 /**
  * @classdesc Represents the Lumino SDK. It allows the user to make every call to the API with a single function.
@@ -27,10 +24,7 @@ export default class Lumino {
         this.luminoNodeBaseUrl = options.luminoNodeBaseUrl;
         this.rskRpcNodeBaseUrl = options.rskRpcNodeBaseUrl;
         this.nodeLuminoAddress = options.nodeLuminoAddress;
-        this.blockChainService = new BlockChainService();
-        this.util = new Util();
-
-        this.api = new APICall(
+        this.api = new Index(
             this.luminoNodeBaseUrl,
             this.debug
         );
@@ -49,14 +43,14 @@ export default class Lumino {
      *  - token_network_identifier: if you can obtain a set of payments in specific token_network
      *  - event_type: You can get 3 different types of events. This events correspond the following names;
      *    EventPaymentReceivedSuccess, EventPaymentSentFailed, EventPaymentSentSuccess. This names corresponding
-     *    a differents ids with you can put into params. EventPaymentReceivedSuccess correspond to 1, EventPaymentSentFailed
+     *    a different ids with you can put into params. EventPaymentReceivedSuccess correspond to 1, EventPaymentSentFailed
      *    to 2 and EventPaymentSentSuccess correspond to 3.
      *  - from_date: Specific from_date to get payments.
      *  - to_date: Specific to_date to get payments.
      *
-     *  The format of dates in params follow the standar ISO 8601 in UTC. For example: 2019-04-11T00:00:00Z
-     *  All of this params are optonally, and can use in combination with others.
-     *  Limit and offset params they must be used togheter, or only limit.
+     *  The format of dates in params follow the ISO 8601 in UTC. For example: 2019-04-11T00:00:00Z
+     *  All of this params are optional, and can use in combination with others.
+     *  Limit and offset params they must be used together, or only limit.
      *
      * @return {Promise} Payments - Returns a Promise that, when fulfilled, will either return an Array with the
      * payments or an Error with the problem.
@@ -79,22 +73,6 @@ export default class Lumino {
     }
 
     /**
-     * Get tokens
-     *
-     * This function makes two calls, the first invocation is to lumino node api, this call get a list of token
-     * addresses, the second call is for a blocakain, and this gets a detail of each token in a list.
-     *
-     * @returns {Promise} Tokens - Returns a Promise that, when fulfilled, will either return an Array with the
-     * tokens details or an Error with the problem. The channels obtained are only open.
-     */
-    async getTokens() {
-
-        const tokenListAddresses = await this.api.send('GET', 'tokens');
-        const tokenListDetails = await this.blockChainService.retrieveTokensData(this.rskRpcNodeBaseUrl, this.nodeLuminoAddress, tokenListAddresses);
-        return tokenListDetails;
-    }
-
-    /**
      * Search tokens, channels, nodes and rns addresses.
      *
      * @param params - query param is mandatory
@@ -110,7 +88,7 @@ export default class Lumino {
      * Open a new offchain channel between two nodes. Allow open a new channel by rsk address node or
      * rns address node.
      *
-     * @param body - This is mandatory
+     * @param data - This is mandatory
      *  - rskPartnerAddress - for example: 0x3E5B85E29504522DCD923aa503b4C502A64AdB7C
      *  - rnsPartnerAddress - for example: dev.rsk.co
      *  - tokenAddress - for example: 0x714E99c00D4Abf4a8a2Af90Fd40B595C68801C42
@@ -122,25 +100,17 @@ export default class Lumino {
      */
     async openChannel(data = {}) {
         let urlPath = 'channels';
-        let body = {}
-
-        const tokens = await this.getTokens();
-        const tokenDecimals = this.util.getDecimals(data.tokenAddress, tokens);
-
-        body.total_deposit = this.util.toWei(data.amount, tokenDecimals);
+        let body = Object.create({});
+        body.total_deposit = web3.utils.toWei(data.amount);
         if (data.rskPartnerAddress) {
             body.partner_address = data.rskPartnerAddress;
         } else if (data.rnsPartnerAddress) {
             urlPath = "channelsLumino";
             body.partner_rns_address = data.rnsPartnerAddress;
         }
-
         body.token_address = data.tokenAddress;
         body.settle_timeout = 500;
-
-        const openChannelResponse = await this.api.send('PUT', urlPath, body, null);
-        return openChannelResponse;
-
+        return await this.api.send('PUT', urlPath, body, null);
     }
 
     /**
@@ -172,15 +142,9 @@ export default class Lumino {
      */
     async makePayment(data = {}, params = {}) {
         let body = {};
-        const tokens = await this.getTokens();
         const url = 'payments/' + params.tokenAddress + "/" + params.partnerAddress;
-
-        const tokenDecimals = this.util.getDecimals(params.tokenAddress, tokens);
-        body.amount = this.util.toWei(data.amount, tokenDecimals);
-
-        const makePaymentResponse = await this.api.send('POST', url, body, params);
-
-        return makePaymentResponse;
+        body.amount = web3.utils.toWei(data.amount);
+        return await this.api.send('POST', url, body, params);
     }
 
     /**
@@ -197,13 +161,9 @@ export default class Lumino {
      */
     async depositTokens(data = {}, params = {}) {
         let body = {};
-        const tokens = await this.getTokens();
-        const channels = await this.getChannels({'token_addresses': params.tokenAddress});
+        const channels = [...await this.getChannels({'token_addresses': params.tokenAddress})];
         const url = 'channels/' + params.tokenAddress + "/" + params.partnerAddress;
-
-        const tokenDecimals = this.util.getDecimals(params.tokenAddress, tokens);
         let channelBalance = 0;
-
         channels.forEach((tokenChannelMap) => {
             if (tokenChannelMap.token_address === params.tokenAddress) {
                 tokenChannelMap.channels.forEach((channel) => {
@@ -213,12 +173,8 @@ export default class Lumino {
                 });
             }
         });
-
-        body.total_deposit = Number(this.util.toWei(data.amount, tokenDecimals)) + Number(channelBalance);
-
-        const depositTokensResponse = await this.api.send('PATCH', url, body, params);
-
-        return depositTokensResponse;
+        body.total_deposit = Number(web3.utils.toWei(data.amount)) + Number(channelBalance);
+        return await this.api.send('PATCH', url, body, params);
     }
 
     /**
@@ -230,15 +186,9 @@ export default class Lumino {
      */
     async joinNetwork(data = {}, params = {}) {
         let body = {};
-        const tokens = await this.getTokens();
         const url = 'connections/' + params.tokenAddress;
-        const tokenDecimals = this.util.getDecimals(params.tokenAddress, tokens);
-
-        body.funds = Number(this.util.toWei(data.funds, tokenDecimals));
-
-        const joinNetworkResponse = await this.api.send('PUT', url, body, params);
-
-        return joinNetworkResponse;
+        body.funds = Number(web3.utils.toWei(data.funds));
+        return await this.api.send('PUT', url, body, params);
     }
 
     /**
@@ -251,7 +201,7 @@ export default class Lumino {
      */
     leaveNetwork(params = {}) {
         const url = 'connections/' + params.tokenAddress;
-        return this.api.send('DELETE', url, body);
+        return this.api.send('DELETE', url);
     }
 }
 

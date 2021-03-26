@@ -7,16 +7,17 @@ import axios from 'axios';
  * @class
  * @abstract
  */
-export default class APICall {
+export default class Index {
 
     /**
-     * Create a APICall.
+     * Create a Index.
      * @constructor
-     * @param luminoNodeBaseUrl - A string with the base URL for lumino node.
+     * @param nodeEndpoint - A string with the base URL for lumino node.
      * @param debug - Flag to see request and responses detail
      */
-    constructor(luminoNodeBaseUrl, debug) {
-        if (!isUrl(luminoNodeBaseUrl)) throw new Error('The base URL provided for lumino node is not valid');
+    constructor(nodeEndpoint, debug) {
+
+        if (!isUrl(nodeEndpoint)) throw new Error('The base URL provided for lumino node is not valid');
 
         if (debug) {
             axios.interceptors.request.use(request => {
@@ -38,7 +39,7 @@ export default class APICall {
         }
 
 
-        this.luminoNodeBaseUrl = luminoNodeBaseUrl;
+        this.nodeEndpoint = nodeEndpoint;
     }
 
     /**
@@ -48,7 +49,7 @@ export default class APICall {
      * data or an Error with the problem.
      */
     send(method, url, data = {}, params = {}) {
-        let callURL = joinUrl(this.luminoNodeBaseUrl, url, {
+        let callURL = joinUrl(this.nodeEndpoint, url, {
             trailingSlash: false
         });
         const headers = {};
@@ -64,7 +65,7 @@ export default class APICall {
             }
             response = this.makeRequest(callURL, headers, method, params);
         } else {
-            const callTokenURL = joinUrl(this.luminoNodeBaseUrl, 'tokenAction', {
+            const callTokenURL = joinUrl(this.nodeEndpoint, 'tokenAction', {
                 trailingSlash: false
             });
             headers['Content-Type'] = 'application/json';

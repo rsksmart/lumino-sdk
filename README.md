@@ -20,11 +20,11 @@ Node installation will include [NPM](https://www.npmjs.com/), which is responsib
 3. Run `npm install`.
 4. Run `gulp build`.
 5. Use the `bundle.js` file generated in `dist` folder to use the SDK in the browser.
-6. Include it in your page like this: `<script src="path/to/lumino-js-sdk.js"></script>` .
+6. Include it in your page like this: `<script src="path/to/index.js"></script>` .
 7. Define the constructor like this: `const Lumino = Lumino.default;`
 
 ## Usage
-As said before, this SDK relies heavily on [Promises](https://developers.google.com/web/fundamentals/getting-started/primers/promises), making it easier to handle the asynchronous requests made to the API.
+This SDK relies heavily on [Promises](https://developers.google.com/web/fundamentals/getting-started/primers/promises), making it easier to handle the asynchronous requests made to the API.
 Besides that, it provides a `Lumino` object containing several methods corresponding to the calls to be performed.
 
 This is a generic example of how to use the SDK, if you need specific details for a specific module, refer to [samples folder](https://github.com/Lumino/lumino-js-sdk/tree/master/samples).
