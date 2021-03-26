@@ -219,7 +219,8 @@ export default class Lumino {
   depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
     return this.getChannel({ tokenAddress, partnerAddress }).pipe(
       map(channel => {
-        const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
+        const total_deposit =
+          Number(amountOnWei) + Number(channel.total_deposit);
         return handleResponse(
           this.client.patch(
             `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
