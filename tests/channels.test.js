@@ -2,7 +2,7 @@
 jest.mock('../src/utils');
 
 import Lumino from '../src';
-import config from '../sdk-config'
+import config from '../setup'
 import {createClient} from '../src/utils';
 
 describe('channels', () => {
@@ -32,12 +32,12 @@ describe('channels', () => {
             "token_network_identifier": "0x0057f5F9Ab25De7F39aa7B80195Bd9150C636504"
         }
     ];
-    
+
     beforeEach(() => {
         lumino = new Lumino({ ...config});
         mockAxios = createClient();
     });
-    
+
     it('should get all active channels', (done) => {
         const expectedChannels = data;
         mockAxios.get.mockResolvedValue({ data: expectedChannels });
@@ -53,7 +53,7 @@ describe('channels', () => {
     it('should get active channels by token address', (done) => {
         const expectedChannel = data[0];
         const expectedChannels = data.filter(channel => channel.token_address === expectedChannel.token_address);
-        
+
         mockAxios.get.mockResolvedValue({ data: expectedChannels });
         lumino.getChannels(expectedChannel.token_address).subscribe(actualChannels => {
             expect(mockAxios.get).toHaveBeenCalledTimes(1);
@@ -111,5 +111,5 @@ describe('channels', () => {
             done();
         });
     });
-    
+
 });
