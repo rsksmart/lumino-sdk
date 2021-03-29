@@ -1,5 +1,5 @@
 import { createClient, handleResponse } from './utils';
-import { map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 /**
  * @classdesc Represents the Lumino SDK. It allows the user to make every call to the API with a single function.
@@ -151,8 +151,10 @@ export default class Lumino {
       total_deposit: amountOnWei,
     };
     if (rskPartnerAddress && rnsPartnerAddress) {
-      throw Error(
-        'The params rnsPartnerAddress and rnsPartnerAddress never go together'
+      return handleResponse(
+        Promise.reject(
+          'The params rnsPartnerAddress and rnsPartnerAddress never go together'
+        )
       );
     }
     if (rskPartnerAddress) {
@@ -163,8 +165,10 @@ export default class Lumino {
       body.partner_rns_address = rnsPartnerAddress;
       return handleResponse(this.client.put('channelsLumino', body));
     }
-    throw Error(
-      'You need to specify partner_address or rnsPartnerAddress parameters'
+    return handleResponse(
+      Promise.reject(
+        'You need to specify partner_address or rnsPartnerAddress parameters'
+      )
     );
   }
 
@@ -218,7 +222,7 @@ export default class Lumino {
    */
   depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
     return this.getChannel({ tokenAddress, partnerAddress }).pipe(
-      map(channel => {
+      switchMap(channel => {
         const total_deposit =
           Number(amountOnWei) + Number(channel.total_deposit);
         return handleResponse(
