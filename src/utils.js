@@ -1,6 +1,6 @@
 import axios from 'axios';
 import isUrl from 'is-url';
-import { of } from 'rxjs';
+import { of, from } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 function createClient(luminoNodeBaseUrl) {
@@ -44,7 +44,7 @@ function setupTokenInterceptor(restClient) {
 }
 
 function handleResponse(promise) {
-  return of(promise).pipe(
+  return from(promise).pipe(
     map(response => response.data),
     catchError(response => of(response.errors))
   );
