@@ -78,12 +78,12 @@ export default class Lumino {
   /**
    * Get channels
    *
-   * @param tokenAddress {String} : an optional token_address to filter by.
+   * @param tokenAddress {String} : an optional tokenAddress to filter by.
    *
    * @return {Promise} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
-  getChannels(tokenAddress) {
+  getChannels(tokenAddress= null) {
     if (tokenAddress) {
       return handleResponse(this.client.get(`channels/${tokenAddress}`));
     }
@@ -220,18 +220,16 @@ export default class Lumino {
    * @returns {Promise} deposit result or error
    */
   depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
-    return this.getChannel({ tokenAddress, partnerAddress }).pipe(
-      map(channel => {
-        const total_deposit =
-          Number(amountOnWei) + Number(channel.total_deposit);
-        return handleResponse(
-          this.client.patch(
-            `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
-            { total_deposit }
-          )
-        );
-      })
-    );
+    return this.getChannel({ tokenAddress, partnerAddress })
+        .then(channel => {
+          const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
+          return handleResponse(
+            this.client.patch(
+              `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
+              { total_deposit }
+            )
+          );
+      });
   }
 
   /**
@@ -243,7 +241,7 @@ export default class Lumino {
     // const url = 'connections/' + params.tokenAddress;
     // body.funds = Number(web3.utils.toWei(data.funds));
     // return await this.client.send('PUT', url, body, params);
-    throw new Error('Not implemented');
+    return Promise.reject('Not implemented');
   }
 
   /**
@@ -255,7 +253,8 @@ export default class Lumino {
    */
   leaveNetwork(tokenAddress) {
     return handleResponse(
-      this.client.send('DELETE', `connections/${tokenAddress}`)
+        //TODO: fix, lumino node stop working here when you send an unknown token address.
+      this.client.delete( `connections/${tokenAddress}`)
     );
   }
 }

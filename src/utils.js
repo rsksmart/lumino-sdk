@@ -44,7 +44,7 @@ function setupTokenInterceptor(restClient) {
 function handleResponse(promise) {
   return new Promise((resolve, reject) => {
     promise.then(response => {
-      resolve(response);
+      resolve(response.data);
     }).catch(error => {
       reject(error.response.data ? error.response.data : error);
     });

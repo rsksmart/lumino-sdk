@@ -68,7 +68,7 @@
                     try {
                         const lumino = new Lumino(setupJson);
                         const jsonResult = await currentSample(lumino);
-                        document.getElementById('result').innerHTML = JSON.stringify(jsonResult, null, 3);
+                        document.getElementById('result').innerHTML = JSON.stringify(jsonResult, null, 2);
                     } catch (error) {
                         console.error(error);
                         document.getElementById('result').innerHTML = 'Error running example, probably has something wrong, check the console messages.';
