@@ -13,6 +13,10 @@ describe('channels', () => {
         lumino = new Lumino({ ...config });
         mockAxios = createClient();
     });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
     it('should get all active channels', (done) => {
         const expectedChannels = [
@@ -48,7 +52,6 @@ describe('channels', () => {
         }, () => done.fail());
     });
 
-
     it('should get active channels by token address', (done) => {
         const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
         const expectedChannels = [
@@ -70,6 +73,30 @@ describe('channels', () => {
             expect(mockAxios.get).toHaveBeenCalledTimes(1);
             expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}`);
             expect(actualChannels).toBe(expectedChannels);
+            done();
+        }, () => done.fail());
+    });
+
+    it('should get active channel by token and partner address', (done) => {
+        const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
+        const partnerAddress  = '0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8'
+        const expectedChannel = {
+            "settle_timeout": 500,
+            "partner_address": "0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8",
+            "token_address": "0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d",
+            "channel_identifier": 6,
+            "balance": 1,
+            "total_deposit": 1,
+            "state": "opened",
+            "token_network_identifier": "0x0057f5F9Ab25De7F39aa7B80195Bd9150C636504",
+            "reveal_timeout": 50
+        };
+
+        mockAxios.get.mockResolvedValue({ data: expectedChannel });
+        lumino.getChannel({ tokenAddress, partnerAddress }).subscribe(actualChannel => {
+            expect(mockAxios.get).toHaveBeenCalledTimes(1);
+            expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}/${partnerAddress}`);
+            expect(actualChannel).toBe(expectedChannel);
             done();
         }, () => done.fail());
     });
@@ -166,6 +193,18 @@ describe('channels', () => {
     });
 
     it('should deposit tokens', (done) => {
+        const channel = {
+            "settle_timeout": 500,
+            "partner_address": "0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8",
+            "token_address": "0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d",
+            "channel_identifier": 6,
+            "balance": 1,
+            "total_deposit": 1,
+            "state": "opened",
+            "token_network_identifier": "0x0057f5F9Ab25De7F39aa7B80195Bd9150C636504",
+            "reveal_timeout": 50
+        };
+        mockAxios.get.mockResolvedValue({ data: channel});
         const expected = {
             "reveal_timeout": 50,
             "total_deposit": 1,
@@ -177,6 +216,7 @@ describe('channels', () => {
             "state": "opened",
             "partner_address": "0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8"
         };
+        
         mockAxios.patch.mockResolvedValue({ data: expected});
         const params = {
             tokenAddress: '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d',
@@ -184,6 +224,7 @@ describe('channels', () => {
             amountOnWei: expected.total_deposit
         };
         lumino.depositTokens(params).subscribe((actual) => {
+            expect(mockAxios.get).toBeCalledTimes(1);
             expect(mockAxios.patch).toBeCalledTimes(1);
             expect(actual).toBe(expected);
             done();
