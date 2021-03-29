@@ -83,7 +83,7 @@ export default class Lumino {
    * @return {Promise} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
-  getChannels(tokenAddress= null) {
+  getChannels(tokenAddress = null) {
     if (tokenAddress) {
       return handleResponse(this.client.get(`channels/${tokenAddress}`));
     }
@@ -220,16 +220,15 @@ export default class Lumino {
    * @returns {Promise} deposit result or error
    */
   depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
-    return this.getChannel({ tokenAddress, partnerAddress })
-        .then(channel => {
-          const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
-          return handleResponse(
-            this.client.patch(
-              `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
-              { total_deposit }
-            )
-          );
-      });
+    return this.getChannel({ tokenAddress, partnerAddress }).then(channel => {
+      const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
+      return handleResponse(
+        this.client.patch(
+          `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
+          { total_deposit }
+        )
+      );
+    });
   }
 
   /**
@@ -253,8 +252,8 @@ export default class Lumino {
    */
   leaveNetwork(tokenAddress) {
     return handleResponse(
-        //TODO: fix, lumino node stop working here when you send an unknown token address.
-      this.client.delete( `connections/${tokenAddress}`)
+      //TODO: fix, lumino node stop working here when you send an unknown token address.
+      this.client.delete(`connections/${tokenAddress}`)
     );
   }
 }

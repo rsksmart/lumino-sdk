@@ -2,7 +2,10 @@ import axios from 'axios';
 import isUrl from 'is-url';
 
 function createClient(luminoNodeBaseUrl) {
-  const restClient = axios.create({ baseURL: luminoNodeBaseUrl, responseType: 'json' });
+  const restClient = axios.create({
+    baseURL: luminoNodeBaseUrl,
+    responseType: 'json',
+  });
   if (!isUrl(luminoNodeBaseUrl)) {
     throw new Error(`${luminoNodeBaseUrl} is not an url`);
   }
@@ -43,11 +46,13 @@ function setupTokenInterceptor(restClient) {
 
 function handleResponse(promise) {
   return new Promise((resolve, reject) => {
-    promise.then(response => {
-      resolve(response.data);
-    }).catch(error => {
-      reject(error.response.data ? error.response.data : error);
-    });
+    promise
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error.response.data ? error.response.data : error);
+      });
   });
 }
 
