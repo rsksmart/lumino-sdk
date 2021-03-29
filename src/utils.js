@@ -1,10 +1,8 @@
 import axios from 'axios';
 import isUrl from 'is-url';
-import { of, from, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 
 function createClient(luminoNodeBaseUrl) {
-  const restClient = axios.create({ baseURL: luminoNodeBaseUrl });
+  const restClient = axios.create({ baseURL: luminoNodeBaseUrl, responseType: 'json' });
   if (!isUrl(luminoNodeBaseUrl)) {
     throw new Error(`${luminoNodeBaseUrl} is not an url`);
   }
@@ -44,10 +42,13 @@ function setupTokenInterceptor(restClient) {
 }
 
 function handleResponse(promise) {
-  return from(promise).pipe(
-    map(response => response.data),
-    catchError(response => throwError(response.errors ? response.errors : response))
-  );
+  return new Promise((resolve, reject) => {
+    promise.then(response => {
+      resolve(response);
+    }).catch(error => {
+      reject(error.response.data ? error.response.data : error);
+    });
+  });
 }
 
 export { createClient, handleResponse };

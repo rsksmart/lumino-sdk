@@ -26,7 +26,9 @@
                         <button class="btn btn-success" onclick="executeSample()">Execute Sample</button>
                     </div>
                 </div>
-                <div id="result" class="w-100"></div>
+                <div class="text-left m-5">
+                    <pre id="result"></pre>
+                </div>
             </div>
         </div>
         <script>
@@ -62,10 +64,17 @@
                 console.error('Error loading samples');
             });
             async function executeSample() {
-                const lumino = new Lumino(setupJson);
                 if (currentSample) {
-                    const result = await currentSample(lumino);
-                    document.getElementById('result').innerHTML = `<pre><code>${result}</code></pre>`;
+                    try {
+                        const lumino = new Lumino(setupJson);
+                        const jsonResult = await currentSample(lumino);
+                        document.getElementById('result').innerHTML = JSON.stringify(jsonResult, null, 3);
+                    } catch (error) {
+                        console.error(error);
+                        document.getElementById('result').innerHTML = 'Error running example, probably has something wrong, check the console messages.';
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = 'Error: the sample fail to load.';
                 }
             }
         </script>

@@ -28,7 +28,7 @@ gulp.task("lint", () => {
 });
 
 gulp.task("watch", () => {
-    gulp.watch(["src/**/*.js", "samples/**"], gulp.series("bundle", "developBuild"));
+    gulp.watch(["src/**/*.js", "src/*.js", "samples/**"], gulp.series("bundle", "developBuild"));
 });
 
 gulp.task("babel", gulp.series("clean", done => {

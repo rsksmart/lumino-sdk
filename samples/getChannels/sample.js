@@ -1,3 +1,18 @@
+function runSample(lumino) {
+    return new Promise((resolve) => {
+        const result = {
+            callWithoutParams: null,
+            callWithParams: null
+        }
+        lumino.getChannels().subscribe(response => {
+            result.callWithoutParams = response;
+        }, error => {
+            result.callWithoutParams = error;
+        });
+    });
+}
+
+
 const Lumino = require('../dist/lumino-js-sdk.js').default;
 const configs = require('../sdk-config');
 

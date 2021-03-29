@@ -6,7 +6,6 @@ function runSample(lumino) {
         }).subscribe(response => {
                 resolve(response);
             }, error => {
-                console.error(error);
                 resolve(error);
             });
     });
