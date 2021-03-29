@@ -2,8 +2,8 @@
 jest.mock('../src/utils');
 
 import Lumino from '../src';
-import config from '../sdk-config'
-import { createClient } from '../src/utils';
+import config from '../setup'
+import {createClient} from '../src/utils';
 
 describe('channels', () => {
     let lumino;
