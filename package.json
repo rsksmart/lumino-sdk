@@ -7,6 +7,8 @@
     "start": "npx gulp develop",
     "test": "jest --passWithNoTests tests/",
     "build": "npx gulp babel",
+    "dist": "npx gulp babel",
+    "bundle": "npx gulp bundle",
     "prettier": "prettier --print-width 80 --end-of-line lf --trailing-comma es5 --write 'src/**/*.js'",
     "lint": "eslint 'src/**' -c './.eslintrc.js' --ignore-path './.eslintignore' --fix",
     "doc": "npx gulp doc"
@@ -19,10 +21,10 @@
     "axios": "0.18.1",
     "bignumber.js": "^9.0.0",
     "ethers": "^4.0.37",
-    "json-bigint": "^0.3.0",
-    "rxjs": "^6.5.3",
     "is-url": "^1.2.4",
+    "json-bigint": "^0.3.0",
     "proper-url-join": "^1.2.0",
+    "rxjs": "^6.5.3",
     "web3": "1.2.4"
   },
   "devDependencies": {
@@ -38,8 +40,12 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
     "@types/jest": "^25.2.3",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
     "babel-jest": "^26.3.0",
+    "babel-loader": "^8.2.2",
     "core-js": "^3.6.4",
+    "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-connect": "^5.7.0",
@@ -49,9 +55,11 @@
     "husky": "^4.3.0",
     "jest": "^25.5.4",
     "json-loader": "^0.5.7",
+    "path": "^0.12.7",
     "prettier": "^1.18.2",
     "regenerator-runtime": "^0.13.3",
-    "sinon": "^7.5.0"
+    "sinon": "^7.5.0",
+    "webpack-stream": "^6.1.2"
   },
   "author": "RSK",
   "license": "ISC",

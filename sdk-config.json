@@ -1,5 +1,0 @@
-{
-  "luminoNodeBaseUrl": "http://localhost:5001/api/v1/",
-  "rskRpcNodeBaseUrl": "http://localhost:4444",
-  "nodeLuminoAddress" : "0x2Cd53d83E5ca1F3c66EDC7bf307139c6B1989C9a"
-}
