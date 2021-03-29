@@ -1,4 +1,5 @@
 import { createClient, handleResponse } from './utils';
+import { map } from 'rxjs/operators';
 
 /**
  * @classdesc Represents the Lumino SDK. It allows the user to make every call to the API with a single function.
@@ -39,7 +40,7 @@ export default class Lumino {
    *  All of this params are optional, and can use in combination with others.
    *  Limit and offset params they must be used together, or only limit.
    *
-   * @return {Promise} Payments - Returns a Promise that, when fulfilled, will either return an Array with the
+   * @return {Observable} Payments - Returns a Promise that, when fulfilled, will either return an Array with the
    * payments or an Error with the problem.
    *
    * @example
@@ -64,7 +65,7 @@ export default class Lumino {
    *
    * @param tokenAddresses {String} : list of token addresses separated by commas
    *
-   * @return {Promise} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
+   * @return {Observable} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
   getJoinableChannels(tokenAddresses) {
@@ -80,7 +81,7 @@ export default class Lumino {
    *
    * @param tokenAddress {String} : an optional token_address to filter by.
    *
-   * @return {Promise} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
+   * @return {Observable} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
   getChannels(tokenAddress) {
@@ -96,7 +97,7 @@ export default class Lumino {
    * @param tokenAddress {String} : the mandatory channel token_address.
    * @param partnerAddress {String} : the mandatory channel partner_address.
    *
-   * @return {Promise} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
+   * @return {Observable} Channels - Returns a Observable that, when fulfilled, will either return an Array with the
    * channels or an Error with the problem. The channels obtained are only open.
    */
   getChannel({ tokenAddress, partnerAddress }) {
@@ -112,7 +113,7 @@ export default class Lumino {
    *                (from nodes, channels, rns addresses or tokens) to be search by lumino.
    * @param onlyReceivers - only search by using node addresses
    *
-   * @returns {Promise} Tokens - Returns a Promise that, when fulfilled, will either return an Map with the
+   * @returns {Observable} Tokens - Returns a Promise that, when fulfilled, will either return an Map with the
    * result search or an Error with the problem. The search result can get contain token addresses matches, node
    * address matches, channel identifier matches and rns address matches.
    */
@@ -136,7 +137,7 @@ export default class Lumino {
    *
    *  The params rnsPartnerAddress and rnsPartnerAddress never go together
    *
-   * @returns {Promise} new channel info, or and error information
+   * @returns {Observable} new channel info, or and error information
    */
   openChannel({
     tokenAddress,
@@ -150,8 +151,10 @@ export default class Lumino {
       total_deposit: amountOnWei,
     };
     if (rskPartnerAddress && rnsPartnerAddress) {
-      throw Error(
-        'The params rnsPartnerAddress and rnsPartnerAddress never go together'
+      return handleResponse(
+        Promise.reject(
+          'The params rnsPartnerAddress and rnsPartnerAddress never go together'
+        )
       );
     }
     if (rskPartnerAddress) {
@@ -162,8 +165,10 @@ export default class Lumino {
       body.partner_rns_address = rnsPartnerAddress;
       return handleResponse(this.client.put('channelsLumino', body));
     }
-    throw Error(
-      'You need to specify partner_address or rnsPartnerAddress parameters'
+    return handleResponse(
+      Promise.reject(
+        'You need to specify partner_address or rnsPartnerAddress parameters'
+      )
     );
   }
 
@@ -172,7 +177,7 @@ export default class Lumino {
    *
    * @param partnerAddress {String} - For example: 0x3E5B85E29504522DCD923aa503b4C502A64AdB7C
    * @param tokenAddress {String} - For example: 0x714E99c00D4Abf4a8a2Af90Fd40B595C68801C42
-   * @returns {Promise} close channel response, or error response.
+   * @returns {Observable} close channel response, or error response.
    */
   closeChannel({ tokenAddress, partnerAddress }) {
     return handleResponse(
@@ -196,7 +201,7 @@ export default class Lumino {
    * @param tokenAddress {String} - Mandatory
    * @param partnerAddress {String} - Mandatory
    *
-   * @returns {Promise}
+   * @returns {Observable}
    */
   makePayment({ amountOnWei, tokenAddress, partnerAddress }) {
     return handleResponse(
@@ -210,10 +215,10 @@ export default class Lumino {
    * Deposit tokens into a channel
    *
    * @param amountOnWei {number} - Mandatory should be on wei
-   * @param tokenAddress {String} - Mandatory
+   * @param token_address {String} - Mandatory
    * @param partnerAddress {String} - Mandatory
    *
-   * @returns {Promise} deposit result or error
+   * @returns {Observable} deposit result or error
    */
   depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
     return this.getChannel({ tokenAddress, partnerAddress }).pipe(
@@ -247,7 +252,7 @@ export default class Lumino {
    *
    * @param tokenAddress
    *
-   * @returns {Promise}
+   * @returns {Observable}
    */
   leaveNetwork(tokenAddress) {
     return handleResponse(
