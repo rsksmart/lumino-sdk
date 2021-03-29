@@ -4,10 +4,9 @@ function runSample(lumino) {
             tokenAddress: '0x714E99c00D4Abf4a8a2Af90Fd40B595C68801C42',
             partnerAddress: '0x3E5B85E29504522DCD923aa503b4C502A64AdB7C'
         }).subscribe(response => {
-                console.log('ERRRORRRR', response);
                 resolve(response);
             }, error => {
-                console.log('ERRRORRRR', error);
+                console.error(error);
                 resolve(error);
             });
     });
