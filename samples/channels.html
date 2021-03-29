@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Get Channels sample</title>
-    <script src="../dist/bundle.js"></script>
+    <script src="../dist/index.js"></script>
 </head>
 <body>
 
@@ -10,25 +10,23 @@
 
 <pre id="json"></pre>
 
-<script>
-    var Lumino = Lumino.default;
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/0.9.0/purify.min.js"></script>
+<script type="text/babel">
+    const Lumino = require('../dist/index');
 
-    let configs = {};
-    configs['luminoNodeBaseUrl'] = 'http://localhost:5001/api/v1/';
-
-    let params = {};
-    params['token_addresses'] = "0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d";
-
+    const config = { luminoNodeBaseUrl: 'http://localhost:5001/api/v1'};
     const lumino = new Lumino(configs);
-
-    lumino.getChannels(params)
-        .then((data) => {
+    
+    window.onload = () => {
+        lumino.getChannels().then((data) => {
             document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
         })
         .catch((error) => {
             console.error(error);
         });
-
+    }
 </script>
 </body>
 </html>

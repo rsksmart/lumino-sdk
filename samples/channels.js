@@ -1,12 +1,13 @@
-const Lumino = require('../dist/lumino-js-sdk.js').default;
-const configs = require('../sdk-config');
+const Lumino = require('../dist/index');
 
+const config = { luminoNodeBaseUrl: 'http://localhost:5001/api/v1'};
 const lumino = new Lumino(configs);
 
-lumino.getChannels()
-    .then((data) => {
+window.onload = () => {
+    lumino.getChannels().then((data) => {
         console.log(data);
     })
     .catch((error) => {
         console.error(error);
     });
+}
