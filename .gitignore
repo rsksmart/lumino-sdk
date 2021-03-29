@@ -62,6 +62,5 @@ typings/
 dist/
 docs/
 .idea/
-.idea
 coverage/
 samplesBuild/
