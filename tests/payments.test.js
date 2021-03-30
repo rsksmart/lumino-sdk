@@ -13,6 +13,7 @@ describe('Payments', () => {
         lumino = new Lumino({ ...config });
         mockAxios = createClient();
     });
+    
     afterEach(() => {
         jest.clearAllMocks();
     });

@@ -60,6 +60,16 @@ export default class Lumino {
   }
 
   /**
+   * Get a list of tokens the node knows about
+   *
+   * @return {Promise} Tokens - Returns a Promise that, when fulfilled, will either return an Array with the
+   * token addresses or an Error with the problem.
+   */
+  getTokens() {
+    return handleResponse(this.client.get('tokens'));
+  }
+
+  /**
    * Get Joinable channels by token address
    *
    * @param tokenAddresses {String} : list of token addresses separated by commas
