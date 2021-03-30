@@ -18,7 +18,7 @@ describe('channels', () => {
         jest.clearAllMocks();
     });
 
-    it('should get all active channels', (done) => {
+    it('should get all active channels', async () => {
         const expectedChannels = [
             {
                 "total_deposit": 1000000000000000000,
@@ -44,15 +44,13 @@ describe('channels', () => {
             }
         ];
         mockAxios.get.mockResolvedValue({ data: expectedChannels });
-        lumino.getChannels().subscribe(actualChannels => {
-            expect(mockAxios.get).toHaveBeenCalledTimes(1);
-            expect(mockAxios.get).toHaveBeenCalledWith('channels');
-            expect(actualChannels).toBe(expectedChannels);
-            done();
-        }, () => done.fail());
+        const actualChannels = await lumino.getChannels()
+        expect(mockAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockAxios.get).toHaveBeenCalledWith('channels');
+        expect(actualChannels).toBe(expectedChannels);
     });
 
-    it('should get active channels by token address', (done) => {
+    it('should get active channels by token address', async () => {
         const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
         const expectedChannels = [
             {
@@ -69,15 +67,13 @@ describe('channels', () => {
         ];
 
         mockAxios.get.mockResolvedValue({ data: expectedChannels });
-        lumino.getChannels(tokenAddress).subscribe(actualChannels => {
-            expect(mockAxios.get).toHaveBeenCalledTimes(1);
-            expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}`);
-            expect(actualChannels).toBe(expectedChannels);
-            done();
-        }, () => done.fail());
+        const actualChannels = await lumino.getChannels(tokenAddress)
+        expect(mockAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}`);
+        expect(actualChannels).toBe(expectedChannels);
     });
 
-    it('should get active channel by token and partner address', (done) => {
+    it('should get active channel by token and partner address', async () => {
         const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
         const partnerAddress  = '0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8'
         const expectedChannel = {
@@ -93,15 +89,13 @@ describe('channels', () => {
         };
 
         mockAxios.get.mockResolvedValue({ data: expectedChannel });
-        lumino.getChannel({ tokenAddress, partnerAddress }).subscribe(actualChannel => {
-            expect(mockAxios.get).toHaveBeenCalledTimes(1);
-            expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}/${partnerAddress}`);
-            expect(actualChannel).toBe(expectedChannel);
-            done();
-        }, () => done.fail());
+        const actualChannel = await lumino.getChannel({ tokenAddress, partnerAddress });
+        expect(mockAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockAxios.get).toHaveBeenCalledWith(`channels/${tokenAddress}/${partnerAddress}`);
+        expect(actualChannel).toBe(expectedChannel);
     });
 
-    it('should open a channel with rsk address', (done) => {
+    it('should open a channel with rsk address', async () => {
         const rskPartnerAddress = '0xFDB5188724e7b84733B8ddAd5b27039891C36dCc'
         const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
         const amountOnWei = 0;
@@ -117,15 +111,12 @@ describe('channels', () => {
             "partner_address": rskPartnerAddress
         };
         mockAxios.put.mockResolvedValue({ data: expected });
-        lumino.openChannel({ rskPartnerAddress, tokenAddress, amountOnWei })
-            .subscribe(actual => {
-                expect(mockAxios.put).toHaveBeenCalledTimes(1);
-                expect(actual).toBe(expected);
-                done();
-            }, () => done.fail());
+        const actual = await lumino.openChannel({ rskPartnerAddress, tokenAddress, amountOnWei });
+        expect(mockAxios.put).toHaveBeenCalledTimes(1);
+        expect(actual).toBe(expected);
     });
 
-    it('should open a channel with rns address', (done) => {
+    it('should open a channel with rns address', async () => {
         const rnsPartnerAddress = "test.rsk";
         const rskPartnerAddress = '0xFDB5188724e7b84733B8ddAd5b27039891C36dCc'
         const tokenAddress = '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d';
@@ -142,12 +133,9 @@ describe('channels', () => {
             "partner_address": rskPartnerAddress
         };
         mockAxios.put.mockResolvedValue({ data: expected });
-        lumino.openChannel({ rnsPartnerAddress, tokenAddress, amountOnWei })
-            .subscribe(actual => {
-                expect(mockAxios.put).toHaveBeenCalledTimes(1);
-                expect(actual).toBe(expected);
-                done();
-            });
+        const actual = await lumino.openChannel({ rnsPartnerAddress, tokenAddress, amountOnWei });
+        expect(mockAxios.put).toHaveBeenCalledTimes(1);
+        expect(actual).toBe(expected);
     });
 
     it('should not open a channel when rns and rsk address are both present', (done) => {
@@ -157,7 +145,9 @@ describe('channels', () => {
             tokenAddress: '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d',
             amountOnWei: 0
         };
-        lumino.openChannel(params).subscribe(() => done.fail(), () => done());
+        lumino.openChannel(params)
+            .then(() => done.fail())
+            .catch(() => done());
     });
 
     it('should not open a channel when rns and rsk address are not present', (done) => {
@@ -165,10 +155,12 @@ describe('channels', () => {
             tokenAddress: '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d',
             amountOnWei: 0
         };
-        lumino.openChannel(params).subscribe(() => done.fail(), () => done());
+        lumino.openChannel(params)
+            .then(() => done.fail())
+            .catch(() => done());
     });
 
-    it('should close a channel', (done) => {
+    it('should close a channel', async () => {
         const expected = {
             "reveal_timeout": 50,
             "total_deposit": 2000000000000000000,
@@ -185,14 +177,12 @@ describe('channels', () => {
             tokenAddress: '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d',
             partnerAddress: '0xFDB5188724e7b84733B8ddAd5b27039891C36dCc'
         };
-        lumino.closeChannel(params).subscribe((actual) => {
-            expect(mockAxios.patch).toBeCalledTimes(1);
-            expect(actual).toBe(expected);
-            done();
-        }, () => done.fail());
+        const actual = await lumino.closeChannel(params)
+        expect(mockAxios.patch).toBeCalledTimes(1);
+        expect(actual).toBe(expected);
     });
 
-    it('should deposit tokens', (done) => {
+    it('should deposit tokens', async () => {
         const channel = {
             "settle_timeout": 500,
             "partner_address": "0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8",
@@ -223,11 +213,9 @@ describe('channels', () => {
             partnerAddress: '0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8',
             amountOnWei: expected.total_deposit
         };
-        lumino.depositTokens(params).subscribe((actual) => {
-            expect(mockAxios.get).toBeCalledTimes(1);
-            expect(mockAxios.patch).toBeCalledTimes(1);
-            expect(actual).toBe(expected);
-            done();
-        }, () => done.fail());
+        const actual = await lumino.depositTokens(params);
+        expect(mockAxios.get).toBeCalledTimes(1);
+        expect(mockAxios.patch).toBeCalledTimes(1);
+        expect(actual).toBe(expected);
     });
 });
