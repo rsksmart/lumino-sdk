@@ -11,3 +11,13 @@ function getSampleList() {
         { name: 'Search', ref: 'search' },
     ];
 }
+
+function switchLoaderButton(loading) {
+    if (loading) {
+        document.getElementById('loading-button').hidden = false;
+        document.getElementById('sample-button').hidden = true;
+    } else {
+        document.getElementById('loading-button').hidden = true;
+        document.getElementById('sample-button').hidden = false;
+    }
+}
