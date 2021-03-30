@@ -51,7 +51,7 @@ function handleResponse(promise) {
         resolve(response.data);
       })
       .catch(error => {
-        reject(error.response.data ? error.response.data : error);
+        reject(error?.response?.data ? error.response.data : error);
       });
   });
 }
