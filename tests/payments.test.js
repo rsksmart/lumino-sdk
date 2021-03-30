@@ -17,15 +17,13 @@ describe('Payments', () => {
         jest.clearAllMocks();
     });
 
-    it('should get all payments', (done) => {
+    it('should get all payments', async () => {
         const expected = [
         ];
         mockAxios.get.mockResolvedValue({ data: expected });
-        lumino.getChannels().subscribe(actual => {
-            expect(mockAxios.get).toHaveBeenCalledTimes(1);
-            expect(actual).toBe(expected);
-            done();
-        }, () => done.fail());
+        const actual = await lumino.getPayments();
+        expect(mockAxios.get).toHaveBeenCalledTimes(1);
+        expect(actual).toBe(expected);
     });
 
 

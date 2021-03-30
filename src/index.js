@@ -150,7 +150,9 @@ export default class Lumino {
       total_deposit: amountOnWei,
     };
     if (rskPartnerAddress && rnsPartnerAddress) {
-        throw new Error('The params rnsPartnerAddress and rskPartnerAddress never go together');
+      throw new Error(
+        'The params rnsPartnerAddress and rskPartnerAddress never go together'
+      );
     }
     if (rskPartnerAddress) {
       body.partner_address = rskPartnerAddress;
@@ -160,7 +162,9 @@ export default class Lumino {
       body.partner_rns_address = rnsPartnerAddress;
       return handleResponse(this.client.put('channelsLumino', body));
     }
-    throw new Error('You need to specify rskPartnerAddress or rnsPartnerAddress parameters');
+    throw new Error(
+      'You need to specify rskPartnerAddress or rnsPartnerAddress parameters'
+    );
   }
 
   /**
