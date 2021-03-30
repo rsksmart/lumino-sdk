@@ -118,7 +118,7 @@ export default class Lumino {
   /**
    * Search tokens, channels, nodes and rns addresses.
    *
-   * @param query - query it's an string that should contain an address or addresses
+   * @param query - query it's an string that should contain an address
    *                (from nodes, channels, rns addresses or tokens) to be search by lumino.
    * @param onlyReceivers - only search by using node addresses
    *
