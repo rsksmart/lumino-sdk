@@ -1,4 +1,4 @@
-import { createClient, handleResponse } from './utils';
+import { createClient, handleResponse, handleResponseStatus } from "./utils";
 
 /**
  * @classdesc Represents the Lumino SDK. It allows the user to make every call to the API with a single function.
@@ -240,13 +240,20 @@ export default class Lumino {
   /**
    * Join into a network creating a new channels with specific token with each node of the
    * network
+   *
+   * @param fundsOnWei {number} - Mandatory should be on wei
+   * @param tokenAddress {string} - Mandatory
+   * @param initialChannelTarget {number} - Optional
+   * @param joinableFundsTarget {number} - Optional
+   *
+   * @returns {Promise} with the result response
    */
-  joinNetwork() {
-    // let body = {};
-    // const url = 'connections/' + params.tokenAddress;
-    // body.funds = Number(web3.utils.toWei(data.funds));
-    // return await this.client.send('PUT', url, body, params);
-    return Promise.reject('Not implemented');
+  joinNetwork({fundsOnWei, tokenAddress, initialChannelTarget, joinableFundsTarget}) {
+    return handleResponseStatus(this.client.put(`connections/${tokenAddress}`, {
+      funds: fundsOnWei,
+      initial_channel_target: initialChannelTarget,
+      joinable_funds_target: joinableFundsTarget
+    }), 204);
   }
 
   /**

@@ -44,6 +44,22 @@ function setupTokenInterceptor(restClient) {
   });
 }
 
+function handleResponseStatus(promise, expectedStatusCode) {
+  return new Promise((resolve, reject) => {
+    promise
+      .then(response => {
+        if (response.status === expectedStatusCode) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      })
+      .catch(error => {
+        reject(error?.response?.data ? error.response.data : error);
+      });
+  });
+}
+
 function handleResponse(promise) {
   return new Promise((resolve, reject) => {
     promise
@@ -56,4 +72,4 @@ function handleResponse(promise) {
   });
 }
 
-export { createClient, handleResponse };
+export { createClient, handleResponse, handleResponseStatus };
