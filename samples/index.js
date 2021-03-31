@@ -9,7 +9,16 @@ function getSampleList() {
         { name: 'Make Payment', ref: 'makePayment' },
         { name: 'Open Channel', ref: 'openChannel' },
         { name: 'Search', ref: 'search' },
-    ];
+        { name: 'Get Tokens', ref: 'getTokens'}
+    ].sort((a, b) => {
+        if (a.name > b.name) {
+            return 1;
+        } else if (a.name < b.name) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
 }
 
 function switchLoaderButton(loading) {

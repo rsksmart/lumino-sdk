@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "start": "npx gulp develop",
-    "test": "jest --passWithNoTests tests/",
+    "test": "jest tests/",
     "build": "npx gulp babel",
     "dist": "npx gulp babel",
     "bundle": "npx gulp bundle",
@@ -45,6 +45,8 @@
     "babel-loader": "^8.2.2",
     "core-js": "^3.6.4",
     "del": "^6.0.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-connect": "^5.7.0",

@@ -148,7 +148,7 @@ export default class Lumino {
    *
    * @returns {Promise} new channel info, or and error information
    */
-  async openChannel({
+  openChannel({
     tokenAddress,
     amountOnWei,
     rskPartnerAddress,
@@ -160,7 +160,7 @@ export default class Lumino {
       total_deposit: amountOnWei,
     };
     if (rskPartnerAddress && rnsPartnerAddress) {
-      throw new Error(
+      return Promise.reject(
         'The params rnsPartnerAddress and rskPartnerAddress never go together'
       );
     }
@@ -172,7 +172,7 @@ export default class Lumino {
       body.partner_rns_address = rnsPartnerAddress;
       return handleResponse(this.client.put('channelsLumino', body));
     }
-    throw new Error(
+    return Promise.reject(
       'You need to specify rskPartnerAddress or rnsPartnerAddress parameters'
     );
   }
@@ -257,9 +257,6 @@ export default class Lumino {
    * @returns {Promise}
    */
   leaveNetwork(tokenAddress) {
-    return handleResponse(
-      //TODO: fix, lumino node stop working here when you send an unknown token address.
-      this.client.delete(`connections/${tokenAddress}`)
-    );
+    return handleResponse(this.client.delete(`connections/${tokenAddress}`));
   }
 }

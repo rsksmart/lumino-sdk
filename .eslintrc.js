@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  extends: "eslint:recommended",
+  extends: ["prettier", "eslint:recommended"],
   parser: "@babel/eslint-parser",
   globals: {
     Atomics: "readonly",
@@ -17,7 +17,6 @@ module.exports = {
   },
   rules: {
     "linebreak-style": ["error", "unix"],
-    quotes: ["error", "single"],
-    semi: ["error", "always"],
   },
+  "plugins": ["prettier"],
 };
