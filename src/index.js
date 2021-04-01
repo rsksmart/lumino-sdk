@@ -1,4 +1,4 @@
-import { createClient, handleResponse, handleResponseStatus } from "./utils";
+import { createClient, handleResponse, handleResponseStatus } from './utils';
 
 /**
  * @classdesc Represents the Lumino SDK. It allows the user to make every call to the API with a single function.
@@ -67,6 +67,16 @@ export default class Lumino {
    */
   getTokens() {
     return handleResponse(this.client.get('tokens'));
+  }
+
+  /**
+   * Get a list of tokens the node knows about
+   *
+   * @return {Promise} Tokens - Returns a Promise that, when fulfilled, will either return an Object with the
+   * node's address or an Error with the problem.
+   */
+  getAddress() {
+    return handleResponse(this.client.get('address'));
   }
 
   /**
@@ -248,12 +258,20 @@ export default class Lumino {
    *
    * @returns {Promise} with the result response
    */
-  joinNetwork({fundsOnWei, tokenAddress, initialChannelTarget, joinableFundsTarget}) {
-    return handleResponseStatus(this.client.put(`connections/${tokenAddress}`, {
-      funds: fundsOnWei,
-      initial_channel_target: initialChannelTarget,
-      joinable_funds_target: joinableFundsTarget
-    }), 204);
+  joinNetwork({
+    fundsOnWei,
+    tokenAddress,
+    initialChannelTarget,
+    joinableFundsTarget,
+  }) {
+    return handleResponseStatus(
+      this.client.put(`connections/${tokenAddress}`, {
+        funds: fundsOnWei,
+        initial_channel_target: initialChannelTarget,
+        joinable_funds_target: joinableFundsTarget,
+      }),
+      204
+    );
   }
 
   /**
