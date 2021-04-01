@@ -9,7 +9,8 @@ function getSampleList() {
         { name: 'Make Payment', ref: 'makePayment' },
         { name: 'Open Channel', ref: 'openChannel' },
         { name: 'Search', ref: 'search' },
-        { name: 'Get Tokens', ref: 'getTokens'}
+        { name: 'Get Tokens', ref: 'getTokens'},
+        { name: 'Get Address', ref: 'getAddress'}
     ].sort((a, b) => {
         if (a.name > b.name) {
             return 1;

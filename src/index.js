@@ -235,16 +235,15 @@ export default class Lumino {
    *
    * @returns {Promise} deposit result or error
    */
-  depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
-    return this.getChannel({ tokenAddress, partnerAddress }).then(channel => {
-      const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
-      return handleResponse(
-        this.client.patch(
-          `/api/v1/channels/${tokenAddress}/${partnerAddress}`,
-          { total_deposit }
-        )
-      );
-    });
+  async depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
+    const channel = await this.getChannel({ tokenAddress, partnerAddress });
+    const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
+    console.log(total_deposit);
+    return await handleResponse(
+      this.client.patch(`channels/${tokenAddress}/${partnerAddress}`, {
+        total_deposit,
+      })
+    );
   }
 
   /**

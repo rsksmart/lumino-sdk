@@ -66,6 +66,7 @@ Here's a list of all the methods available:
 
 * `getPayments(object)`
 * `getTokens()`
+* `getAddress()`
 * `getJoinableChannels(string)`
 * `getChannels(string)`
 * `getChannel(object)`
