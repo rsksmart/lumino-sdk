@@ -238,7 +238,6 @@ export default class Lumino {
   async depositTokens({ amountOnWei, tokenAddress, partnerAddress }) {
     const channel = await this.getChannel({ tokenAddress, partnerAddress });
     const total_deposit = Number(amountOnWei) + Number(channel.total_deposit);
-    console.log(total_deposit);
     return await handleResponse(
       this.client.patch(`channels/${tokenAddress}/${partnerAddress}`, {
         total_deposit,
