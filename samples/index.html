@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Samples</title>
+        <script src="index.js"></script>
+        <script src="bundle.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    </head>
+    <body class="container-fluid">
+        <div class="text-center">
+            <h3 class="text-uppercase">Samples</h3>
+            <div class="m-5">
+                <span class="text-uppercase">Choose a sample from the list:</span>
+                <div class="list-group mt-5" id="sample-list"></div>
+            </div>
+            <div id="selected-sample" class="invisible d-flex">
+                <div class="d-flex justify-content-between">
+                    <h4 id="selected-sample-name" class="text-uppercase"></h4>
+                    <div>
+                        <button id="sample-button" class="btn btn-success" onclick="executeSample()">Execute Sample</button>
+                        <button id="loading-button" class="btn btn-primary" type="button" disabled hidden>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Loading...</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-left m-5">
+                    <pre id="result"></pre>
+                </div>
+            </div>
+        </div>
+        <script>
+            let currentSample = null;
+            let setupJson = null;
+            $.get('setup.json')
+            .done(function(setup) {
+                setupJson = setup;
+                const samples = getSampleList();
+                samples.forEach(sample => {
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.title = sample.name;
+                    item.text = sample.name;
+                    item.className = 'list-group-item list-group-item-action';
+                    item.onclick = () => {
+                        $.getScript(`${sample.ref}/sample.js`)
+                            .done(function(script) {
+                                document.getElementById('selected-sample-name').innerHTML = sample.name;
+                                document.getElementById('result').innerHTML = '';
+                                document.getElementById('selected-sample').className = 'visible';
+                                eval(script);
+                                currentSample = runSample;
+                            })
+                            .fail(function(jqxhr, settings, exception) {
+                                console.error('Triggered ajaxError handler.', exception);
+                            });
+                    };
+                    document.getElementById('sample-list').appendChild(item);
+                });
+            })
+            .fail(function(jqxhr, settings, exception) {
+                console.error('Error loading samples', exception);
+            });
+            async function executeSample() {
+                if (currentSample) {
+                    try {
+                        switchLoaderButton(true);
+                        const lumino = new Lumino({luminoNodeBaseUrl: setupJson.luminoNodeBaseUrl});
+                        const jsonResult = await currentSample(lumino, setupJson.sampleParams);
+                        document.getElementById('result').innerHTML = JSON.stringify(jsonResult, null, 2);
+                        switchLoaderButton(false);
+                    } catch (error) {
+                        console.error(error);
+                        document.getElementById('result').innerHTML = 'Error running example, probably has something wrong, check the console messages.';
+                        switchLoaderButton(false);
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = 'Error: the sample fail to load.';
+                }
+            }
+        </script>
+    </body>
+</html>

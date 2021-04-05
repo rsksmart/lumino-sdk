@@ -1,0 +1,8 @@
+{
+  "luminoNodeBaseUrl": "http://localhost:5000/api/v1/",
+  "sampleParams": {
+    "amountOnWei": 1,
+    "tokenAddress": "0x47E5b7d85Da2004781FeD64aeEe414eA9CdC4f17",
+    "partnerAddress": "0xb69755ee7da32BF1853cFb77cC353f8A03677AA7"
+  }
+}

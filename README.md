@@ -1,7 +1,8 @@
 
 # Lumino JavaScript SDK
 
-This SDK aims to help the development of integrations with Lumino that use JavaScript, providing an easy interface to communicate with Lumino's REST API and request the information required.
+This library works as a client for the lumino node. Developers can use this to integrate their services with lumino
+using javascript. This code provides an easy interface to communicate with Lumino's REST API and request the information required.
 For that purpose, many ES2015 features were used, as well as Promises notation to help dealing with asynchronous code.
 
 ## Requirements
@@ -18,18 +19,20 @@ Node installation will include [NPM](https://www.npmjs.com/), which is responsib
 1. Checkout the repository `git clone git@github.com:Lumino/lumino-js-sdk.git`.
 2. Go to the `lumino-js-sdk` directory.
 3. Run `npm install`.
-4. Run `gulp build`.
-5. Use the `bundle.js` file generated in `dist` folder to use the SDK in the browser.
-6. Include it in your page like this: `<script src="path/to/lumino-js-sdk.js"></script>` .
-7. Define the constructor like this: `const Lumino = Lumino.default;`
+4. Run `npm run bundle` to generate a bundle.js inside the `dist` folder ready to be used in the browser.
+5. Use the content generated in `dist` folder to use the SDK in your code.
+6. Include it in your page like this: `<script src="path/to/bundle.js"></script>` .
 
 ## Usage
-As said before, this SDK relies heavily on [Promises](https://developers.google.com/web/fundamentals/getting-started/primers/promises), making it easier to handle the asynchronous requests made to the API.
-Besides that, it provides a `Lumino` object containing several methods corresponding to the calls to be performed.
 
-This is a generic example of how to use the SDK, if you need specific details for a specific module, refer to [samples folder](https://github.com/Lumino/lumino-js-sdk/tree/master/samples).
+This SDK relies heavily on [Promises](https://developers.google.com/web/fundamentals/getting-started/primers/promises), 
+making it easier to handle the asynchronous requests made to the API. Besides that, it provides a `Lumino` object 
+containing several methods corresponding to the calls to be performed.
 
-Before executing any request, you need to call the constructor passing your credentials as parameters, making it possible to authorize the calls to the API:
+This is a generic example of how to use the SDK, if you need specific details for a specific module, 
+refer to [samples folder](./samples).
+
+Before executing any request, you need to call the constructor passing the initial configuration for the SDK like this:
 
 ```js
 const lumino = new Lumino({    
@@ -37,9 +40,12 @@ const lumino = new Lumino({
 });
 ```
 
-From this point on, you just need to call the methods made available to call the API and retrieve the data you're looking for. Following the Promises notation, you should use `.then()`/`.catch()` to handle respectively the successful and failed requests.
+From this point on, you just need to call the available methods inside the lumino object to call the API and retrieve
+the data you're looking for. Following the Promises notation, you should use `.then()`/`.catch()` to handle respectively 
+the successful and failed requests.
 
-Except for some special cases, most of the calls only take an object as parameter. After that, you'll need to refer to the API to tune the query as intended.
+Except for some special cases, most of the calls only take an object as parameter. After that, you'll need to refer 
+to the API to tune the query as intended.
 
 ```js
 
@@ -58,35 +64,47 @@ Except for some special cases, most of the calls only take an object as paramete
 ## Methods available
 Here's a list of all the methods available:
 
-* `getChannels(token)`
-* `getPayments(queryObject)`
+* `getPayments(object)`
 * `getTokens()`
-* `search(queryObject)`
+* `getAddress()`
+* `getJoinableChannels(string)`
+* `getChannels(string)`
+* `getChannel(object)`
+* `search(object)`
 * `openChannel(object)`
-* `closeChannel(object,queryObject)`
-* `makePayment(object, queryObject)`
-* `depositTokens(object, queryObject)`
-* `joinNetwork(object, queryObject)`
-* `leaveNetwork(queryObject)`
+* `closeChannel(object)`
+* `makePayment(object)`
+* `depositTokens(object)`
+* `leaveNetwork(string)`
 
 
 ## Contribute to the SDK
-If you wish to contribute to this repository and further extend the API coverage of the SDK, here are the steps necessary to prepare your environment:
+
+If you wish to contribute to this repository and further extend the API coverage of the SDK,
+here are the steps necessary to prepare your environment:
 
 1. Clone the repository
 2. In the root folder, run `npm install` to install all the dependencies.
-3. Edit the file named `sdk-config.json` to provide API SDK config params with following this structure:
+3. Edit the file named `setup.json` to provide API SDK config params following this structure:
 ```json
-{  
-  "luminoNodeBaseUrl": "http://host:port/api/v1/",  
-  "rskRpcNodeBaseUrl": "http://host:port",  
-  "nodeLuminoAddress" : "rsk-address-node"  
+{
+  "luminoNodeBaseUrl": "http://localhost:5000/api/v1/",
+  "sampleParams": {
+    "amountOnWei": 1,
+    "tokenAddress": "0x47E5b7d85Da2004781FeD64aeEe414eA9CdC4f17",
+    "partnerAddress": "0xb69755ee7da32BF1853cFb77cC353f8A03677AA7"
+  }
 }
+
 ```
-4. Use any of these gulp tasks to:
-  1. `gulp lint` - Run ESlint and check the code.
-  2. `gulp build` - Run webpack to bundle the code in order to run in a browser.
-  3. `gulp babel` - Run Babel to create a folder 'dist' with ES2015 compatible code.
-  4. `gulp jasmine` - Run Jasmine for all the spec files inside 'tests'.
-  5. `gulp doc` - Run JSDoc to create a 'doc' folder with automatically generated documentation for the source code.
-  6. `gulp webserver` - Deploy a web server from the root folder at `localhost:8080` to run the html samples (in order to avoid CORS problems).
+* sampleParams are optional but we recommend to put real values there since are neccesary to run the samples
+
+4.Use any of these commands to:
+  1. `npm run lint` - Run ESlint and check the code.
+  2. `npm run bundle` - Run webpack to bundle the code in order to run in a browser.
+  3. `npm run dist` or `npm run build` - Run Babel to create a folder 'dist' with ES2015 compatible code.
+  4. `npm test` - Run Jest for all the spec files inside 'tests'.
+  5. `npm run doc` - Run JSDoc to create a 'doc' folder with generated documentation for the source code, also 
+     it starts a web server at `localhost:8085` to serve the doc files.
+  6. `npm start` - Deploy a web server at `localhost:8085` to run the html samples (in order to avoid CORS problems).
+  7. `npm run prettier` - to run [prettier](https://www.npmjs.com/package/prettier) on the SDK code. 
