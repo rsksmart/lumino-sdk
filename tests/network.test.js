@@ -9,7 +9,7 @@ describe('connections', () => {
     let mockAxios;
 
     beforeEach(() => {
-        lumino = new Lumino({ ...config });
+        lumino = new Lumino(config.luminoNodeBaseUrl);
         mockAxios = createClient();
     });
 

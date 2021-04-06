@@ -10,10 +10,10 @@ describe('channels', () => {
     let mockAxios;
 
     beforeEach(() => {
-        lumino = new Lumino({ ...config });
+        lumino = new Lumino(config.luminoNodeBaseUrl);
         mockAxios = createClient();
     });
-    
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -206,7 +206,7 @@ describe('channels', () => {
             "state": "opened",
             "partner_address": "0xF355C8BA6692b4651aAF5Eb1AB13521AfEc3E6d8"
         };
-        
+
         mockAxios.patch.mockResolvedValue({ data: expected});
         const params = {
             tokenAddress: '0x4Bc2450bD377c47e4E7e79F830BeE28B37DDe75d',
