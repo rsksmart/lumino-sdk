@@ -71,7 +71,7 @@
                 if (currentSample) {
                     try {
                         switchLoaderButton(true);
-                        const lumino = new Lumino({luminoNodeBaseUrl: setupJson.luminoNodeBaseUrl});
+                        const lumino = new Lumino(setupJson.luminoNodeBaseUrl);
                         const jsonResult = await currentSample(lumino, setupJson.sampleParams);
                         document.getElementById('result').innerHTML = JSON.stringify(jsonResult, null, 2);
                         switchLoaderButton(false);
