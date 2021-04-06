@@ -10,10 +10,10 @@ describe('Payments', () => {
     let mockAxios;
 
     beforeEach(() => {
-        lumino = new Lumino({ ...config });
+        lumino = new Lumino(config.luminoNodeBaseUrl);
         mockAxios = createClient();
     });
-    
+
     afterEach(() => {
         jest.clearAllMocks();
     });

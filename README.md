@@ -35,9 +35,7 @@ refer to [samples folder](./samples).
 Before executing any request, you need to call the constructor passing the initial configuration for the SDK like this:
 
 ```js
-const lumino = new Lumino({    
-    luminoNodeBaseUrl: "http://api-url.lumino-node/api/v1/"
-});
+const lumino = new Lumino("http://api-url.lumino-node/api/v1/");
 ```
 
 From this point on, you just need to call the available methods inside the lumino object to call the API and retrieve

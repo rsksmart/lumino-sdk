@@ -9,11 +9,8 @@ export default class Lumino {
    * Create Lumino SDK.
    * @constructor
    * @param {String} luminoNodeBaseUrl - The base URL to invoke the api of node.
-   * @param {String} debug - Flag to see requests and responses when call an api node.
-   * @param {String} nodeLuminoAddress - Principal node address.
    */
-  constructor({ debug, luminoNodeBaseUrl }) {
-    this.debug = !!debug;
+  constructor(luminoNodeBaseUrl) {
     this.client = createClient(luminoNodeBaseUrl);
   }
 
